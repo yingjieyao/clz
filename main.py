@@ -1,4 +1,5 @@
 import random
+import copy
 
 PERSON = 2
 PER_REQUEST = 2
@@ -43,7 +44,7 @@ def generate_rand():
 
 def variance(inn):
     length = len(inn)
-    sum_1 = 0
+    sum_1 = 0.0
     sum2 = 0.0
     if length == 0:
         return 0
@@ -58,7 +59,7 @@ def variance(inn):
 def average(inn):
     if len(inn) == 0:
         return 0
-    return sum(inn) / len(inn)
+    return sum(inn) * 1.0 / len(inn)
 
 
 def calc_pi(data, user, i, sum_consume):
@@ -94,7 +95,7 @@ def find_pi_max(data, user, i, sum_consume):
     user_copy = user
     matrix_element = calc_pi(data, user, i, sum_consume)
     tmp1 = user[i]
-    for status in range(0, 1 << PER_REQUEST):
+    for status in range(1, 1 << PER_REQUEST):
         user_copy[i] = status
         tmp2 = calc_pi(data, user_copy, i, sum_consume)
         if tmp2 > matrix_element:
@@ -117,7 +118,7 @@ if __name__ == '__main__':
         dat = fin[index].split("\t")
         satisfy = int(dat[0])
         consume = int(dat[1][:-1])
-        sum_consume = consume
+        sum_consume += consume
         data.append((satisfy, consume))
 
     user = []
@@ -129,7 +130,7 @@ if __name__ == '__main__':
     while not flag:
         for t in range(0, PERSON):
             tm = t
-            tmp = find_pi_max(data, user, tm, sum_consume)
+            tmp = find_pi_max(data, copy.copy(user), tm, sum_consume)
             if user[tm] != tmp:
                 user[tm] = tmp
                 flag = False
@@ -137,8 +138,9 @@ if __name__ == '__main__':
             else:
                 flag = True
 
-    for i in range(0, PERSON):
-        print str(user[i]) + '\t'
+    print user
+    # for i in range(0, PERSON):
+    #     print str(user[i]) + '\t'
 
-    print '\n'
-    print calc_pi(data, user, -1, sum_consume)
+    # print '\n'
+    print calc_pi(data, copy.copy(user), -1, sum_consume)
