@@ -1,7 +1,10 @@
+#coding=utf8
 import random
+import time
 import copy
 
-PERSON = 2
+person = [2, 3, 150]
+PER_SIZE_TIMES = 1 # 每个次数的人，运行多少次
 PER_REQUEST = 2
 SUM_SATISFY = 100
 MAX_CONSUME = 1000
@@ -20,7 +23,7 @@ class Need:
         self.consume = next_consume
 
 
-def generate_rand():
+def generate_rand(PERSON):
 
     out = open('rand.txt', 'w')
     for it in range(0, PERSON):
@@ -62,7 +65,7 @@ def average(inn):
     return sum(inn) * 1.0 / len(inn)
 
 
-def calc_pi(data, user, i, sum_consume):
+def calc_pi(data, user, i, sum_consume, PERSON):
     tmp_satisfy = []
     tmp_consume = []
     for _ in range(0, PERSON):
@@ -90,14 +93,14 @@ def calc_pi(data, user, i, sum_consume):
 
 
 
-def find_pi_max(data, user, i, sum_consume):
+def find_pi_max(data, user, i, sum_consume, PERSON):
     # print 'find_pi_max in', i
     user_copy = user
-    matrix_element = calc_pi(data, user, i, sum_consume)
+    matrix_element = calc_pi(data, user, i, sum_consume, PERSON)
     tmp1 = user[i]
     for status in range(1, 1 << PER_REQUEST):
         user_copy[i] = status
-        tmp2 = calc_pi(data, user_copy, i, sum_consume)
+        tmp2 = calc_pi(data, user_copy, i, sum_consume, PERSON)
         if tmp2 > matrix_element:
             matrix_element = tmp2
             tmp1 = status
@@ -105,9 +108,10 @@ def find_pi_max(data, user, i, sum_consume):
     return tmp1
 
 
-if __name__ == '__main__':
+def deal_with(PERSON):
 
-    # generate_rand()
+    print 'deal with %d PERSONS' % PERSON
+    generate_rand(PERSON)
 
     # read data from file
     data = []
@@ -121,6 +125,8 @@ if __name__ == '__main__':
         sum_consume += consume
         data.append((satisfy, consume))
 
+    start = time.clock()
+
     user = []
     tmp = 0
     for i in range(0, PERSON):
@@ -130,7 +136,7 @@ if __name__ == '__main__':
     while not flag:
         for t in range(0, PERSON):
             tm = t
-            tmp = find_pi_max(data, copy.copy(user), tm, sum_consume)
+            tmp = find_pi_max(data, copy.copy(user), tm, sum_consume, PERSON)
             if user[tm] != tmp:
                 user[tm] = tmp
                 flag = False
@@ -138,9 +144,15 @@ if __name__ == '__main__':
             else:
                 flag = True
 
-    print user
+    print "program run", time.clock() - start
+    print "select ", user
     # for i in range(0, PERSON):
     #     print str(user[i]) + '\t'
 
     # print '\n'
-    print calc_pi(data, copy.copy(user), -1, sum_consume)
+    print 'result score: ', calc_pi(data, copy.copy(user), -1, sum_consume, PERSON)
+
+if __name__ == '__main__':
+    for PERSON in person:
+        for ti in range(0, PER_SIZE_TIMES):
+            deal_with(PERSON)
